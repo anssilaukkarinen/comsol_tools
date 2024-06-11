@@ -1,8 +1,26 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Jun 11 10:06:03 2024
+Anssi Laukkarinen
 
-@author: laukkara
+Read in hourly radiation data for horizontal surface and calculate
+radiation to vertical surfaces.
+
+The calculations are done using the pvlib python package.
+
+
+
+decomposition - vaakapinnalta mitatun GHI:n jakaminen suoraan ja diffuusiin
+closure equation: GHI = DNI * cos(zenith_angle) + DHI
+GHI (Iglob) - pyranometer, horizontal surface (Rdif + Rdir)
+DNI (Ibeam) - pyrheliometer + sun tracker
+DHI (Idif) - pyranometers + shading device, horizontal surface
+
+transposition - vaakapinnalta mitatun säteilyn muuntaminen muulle pinnalle
+It = Ibeam*cos(incidence_angle) + Idif*Rdif + albedo*Iglob*Rground_refl
+
+RAMI-aineistoissa säteilysuureet ovat edeltävän tunnin keskiarvoja
+
 """
 
 import os
@@ -31,20 +49,7 @@ if not os.path.exists(output_folder):
 
 ########
 
-# decomposition - vaakapinnalta mitatun GHI:n jakaminen suoraan ja diffuusiin
-# closure equation: GHI = DNI * cos(zenith_angle) + DHI
-# GHI (Iglob) - pyranometer, horizontal surface (Rdif + Rdir)
-# DNI (Ibeam) - pyrheliometer + sun tracker
-# DHI (Idif) - pyranometers + shading device, horizontal surface
 
-
-# transposition - vaakapinnalta mitatun säteilyn muuntaminen muulle pinnalle
-# It = Ibeam*cos(incidence_angle) + Idif*Rdif + albedo*Iglob*Rground_refl
-
-
-
-
-# RAMI-aineistoissa säteilysuureet ovat edeltävän tunnin keskiarvoja
 
 file = 'Jokioinen 2011 nykyilmasto 1989-2018.csv'
 fname = os.path.join(input_folder,
