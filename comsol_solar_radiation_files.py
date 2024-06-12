@@ -56,7 +56,7 @@ fname = os.path.join(input_folder,
                      file)
 
 data = pd.read_csv(fname,
-                   sep='\s+')
+                   sep=r'\s+')
 
 
 ## Solar position
@@ -67,7 +67,7 @@ my_dict = {'year': data.loc[:,'YEAR'].values,
            'day': data.loc[:,'DAY'].values,
            'hour': data.loc[:,'HOUR'].values}
 my_datetime_fin_normal = pd.to_datetime(arg=my_dict)
-my_datetime_utc = my_datetime_fin_normal - pd.Timedelta(value='2H')
+my_datetime_utc = my_datetime_fin_normal - pd.Timedelta(value='2h')
 my_datetime_utc_minusHalfHour = my_datetime_utc - pd.Timedelta(value='30min')
 
 time = my_datetime_utc_minusHalfHour
@@ -147,9 +147,13 @@ for surface_azimuth in np.arange(start=0.0, stop=360.0, step=90.0):
     #            fmt = '%.3f')
     
     # version 2
+    tup = (np.arange(start=0, stop=len(poa_global_even_hours)),
+           poa_global_even_hours)
+    X = np.column_stack(tup)
+    
     np.savetxt(fname,
-               poa_global_even_hours,
-               fmt = '%.3f')
+               X,
+               fmt = ['%d', '%.3f'])
 
 
 # plot
