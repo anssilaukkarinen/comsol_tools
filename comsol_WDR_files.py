@@ -40,15 +40,30 @@ fname = os.path.join(input_folder,
                      file)
 
 data = pd.read_csv(fname,
-                   sep='\s+')
+                   sep=r'\s+')
 
+
+ws = data.loc[:,'ws'].values # m/s
+wd = data.loc[:,'wd'].values # deg from north
+precip = data.loc[:,'precip'].values # mm/h
 
 
 
 ##
 
+# Terrain category, maastoluokka
+terrain_category = 'I'
 
-terrain_category = 'I' # 
+# Building total height, m
+z_building = 6.0
+
+C_T = 1.0
+
+O = 1.0
+
+W = 0.5
+
+z_0_II_1991 = 0.05
 
 
 
@@ -113,34 +128,17 @@ else:
 
 ##
 
-
-ws = data.loc[:,'ws'].values # m/s
-wd = data.loc[:,'wd'].values # deg from north
-precip = data.loc[:,'precip'].values # mm/h
-
-
-
-
-
-
-## 
-
 for Theta_wall in np.arange(start=0.0, stop=360.0, step=90.0):
     # Wall direction, degree
     # This is the same than surface_azimuth in solar radiation calculations
     #Theta_wall = 180.0
     
-    # Building total height, m
-    z_building = 6.0
-    
-    
+    print('Theta_wall:', Theta_wall)
     
     I_S = (2.0/9.0) * ws * ( precip**(8.0/9.0) ) \
             * np.maximum( np.cos( (np.pi/180.0)*(wd-Theta_wall) ) , 0.0)
     
     
-    
-    z_0_II_1991 = 0.05
     k_r_1991 = 0.19 * (z_0_1991/z_0_II_1991)**0.07
     
     C_R_1991 = k_r_1991 * np.log(np.max((z_building, z_min_1991))/z_0_1991)
@@ -154,38 +152,35 @@ for Theta_wall in np.arange(start=0.0, stop=360.0, step=90.0):
     # when calculated for buildings for which z_building < z_min
     C_R = C_R_15927 
     
-    C_T = 1.0
-    
-    O = 1.0
-    
-    W = 0.5
     
     I_WS = I_S * C_R * C_T * O * W
     
     
-    print('I_WS all Te:', I_WS.sum())
+    print('  I_WS all Te:', I_WS.sum().round(1))
     
     # Include only wind-driven rain when outdoor air temperature is above 0 degC
     
     idxs_subzero = data.loc[:,'Te'] < 0.0
     I_WS[idxs_subzero] = 0.0
     
-    print('I_WS positive Te:', I_WS.sum())
+    print('  I_WS positive Te:', I_WS.sum().round(1))
     
     
     ## Output
     
-    # File
+    tup = (np.arange(start=0, stop=len(I_WS)),
+           I_WS)
+    X = np.column_stack(tup)
     
+    # File
     fname = os.path.join(output_folder,
                          f'wdr {file[:-4]} surfaz{Theta_wall}' \
                          f' tercat{terrain_category} z{z_building}.csv')
     
     np.savetxt(fname,
-               I_WS,
-               fmt = '%.3f')
+               X,
+               fmt = ['%d', '%.4f'])
     
-
 
 
 # Plot
