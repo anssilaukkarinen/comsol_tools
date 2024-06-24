@@ -25,8 +25,7 @@ input_folder = os.path.join(root_folder,
                             'DB_climate')
 
 output_folder = os.path.join(root_folder,
-                             'DB_climate',
-                             'wind-driven rain')
+                             'DB_climate')
 
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
@@ -49,7 +48,7 @@ precip = data.loc[:,'precip'].values # mm/h
 
 
 
-##
+## Input parameters
 
 # Terrain category, maastoluokka
 terrain_category = 'I'
@@ -63,8 +62,12 @@ O = 1.0
 
 W = 0.5
 
-z_0_II_1991 = 0.05
 
+
+#####################
+
+
+z_0_II_1991 = 0.05
 
 
 if terrain_category == '0':
@@ -174,7 +177,7 @@ for Theta_wall in np.arange(start=0.0, stop=360.0, step=90.0):
     
     # File
     fname = os.path.join(output_folder,
-                         f'wdr {file[:-4]} surfaz{Theta_wall}' \
+                         f'{file[:-4]} wdr surfaz{Theta_wall}' \
                          f' tercat{terrain_category} z{z_building}.csv')
     
     np.savetxt(fname,

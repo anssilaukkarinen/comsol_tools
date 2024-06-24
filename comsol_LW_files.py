@@ -19,8 +19,7 @@ input_folder = os.path.join(root_folder,
                             'DB_climate')
 
 output_folder = os.path.join(root_folder,
-                             'DB_climate',
-                             'long-wave radiation')
+                             'DB_climate')
 
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
@@ -75,7 +74,7 @@ X = np.column_stack(tup)
 # File
 
 fname = os.path.join(output_folder,
-                     f'LWincoming {file[:-4]}.csv')
+                     f'{file[:-4]} LWincoming.csv')
 
 np.savetxt(fname,
            X,

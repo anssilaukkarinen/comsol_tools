@@ -39,8 +39,7 @@ input_folder = os.path.join(root_folder,
                             'DB_climate')
 
 output_folder = os.path.join(root_folder,
-                             'DB_climate',
-                             'solar_radiation')
+                             'DB_climate')
 
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
@@ -139,14 +138,8 @@ for surface_azimuth in np.arange(start=0.0, stop=360.0, step=90.0):
     
     ## Output
     fname = os.path.join(output_folder,
-                         f'sunrad {file[:-4]} surfaz{surface_azimuth}.csv')
+                         f'{file[:-4]} sunrad surfaz{surface_azimuth}.csv')
     
-    # version 1
-    # np.savetxt(fname,
-    #            total_irrad['poa_global'],
-    #            fmt = '%.3f')
-    
-    # version 2
     tup = (np.arange(start=0, stop=len(poa_global_even_hours)),
            poa_global_even_hours)
     X = np.column_stack(tup)
@@ -158,8 +151,8 @@ for surface_azimuth in np.arange(start=0.0, stop=360.0, step=90.0):
 
 # plot
 fig, ax = plt.subplots()
-ax.plot(total_irrad['poa_global'][4500:5000])
-ax.plot(poa_global_even_hours[4500:5000])
+ax.plot(total_irrad['poa_global'][4500:4600])
+ax.plot(poa_global_even_hours[4500:4600])
 
 
 
