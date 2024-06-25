@@ -62,6 +62,8 @@ O = 1.0
 
 W = 0.5
 
+a_r = 0.7
+
 
 
 #####################
@@ -156,7 +158,7 @@ for Theta_wall in np.arange(start=0.0, stop=360.0, step=90.0):
     C_R = C_R_15927 
     
     
-    I_WS = I_S * C_R * C_T * O * W
+    I_WS = I_S * C_R * C_T * O * W * a_r
     
     
     print('  I_WS all Te:', I_WS.sum().round(1))
@@ -171,18 +173,28 @@ for Theta_wall in np.arange(start=0.0, stop=360.0, step=90.0):
     
     ## Output
     
+    # I_S
+    
+    tup = (np.arange(start=0, stop=len(I_S)),
+           I_S)
+    X = np.column_stack(tup)
+    
+    fname = os.path.join(output_folder,
+                         f'{file[:-4]} I_S surfaz{Theta_wall}.csv')
+    
+    np.savetxt(fname, X, fmt = ['%d', '%.4f'])
+    
+    
+    # 
     tup = (np.arange(start=0, stop=len(I_WS)),
            I_WS)
     X = np.column_stack(tup)
     
-    # File
     fname = os.path.join(output_folder,
                          f'{file[:-4]} wdr surfaz{Theta_wall}' \
                          f' tercat{terrain_category} z{z_building}.csv')
     
-    np.savetxt(fname,
-               X,
-               fmt = ['%d', '%.4f'])
+    np.savetxt(fname, X, fmt = ['%d', '%.4f'])
     
 
 

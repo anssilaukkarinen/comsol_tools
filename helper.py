@@ -1,4 +1,38 @@
 
+import numpy as np
+
+
+
+
+
+def calc_vsat(T_, arg1='ice'):
+    # [T_] = degC
+    
+    R_w = 461.5
+    
+    pvsat = 610.5 * np.exp((17.269*T_)/(237.3+T_))
+    
+    if arg1 == 'ice':
+        
+        idxs_subzero = (T_ < 0.0)
+        
+        pvsat[idxs_subzero] \
+            = 610.5*np.exp((21.875*T_[idxs_subzero])/(265.5+T_[idxs_subzero]))
+    
+    vsat = 1000.0 * pvsat / (R_w*(273.15+T_))
+    
+    return(vsat)
+
+     
+
+
+
+
+
+
+
+
+
 def MI(dataT, dataRH, MGspeedclass, MGmaxclass, Cmat):
     
     """
