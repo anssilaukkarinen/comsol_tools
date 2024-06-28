@@ -43,6 +43,36 @@ Te = data.loc[:,'Te']
 ve = data.loc[:,'ve']
 
 
+
+
+# Read in and export the same file with header line commented out
+
+with open(fname, 'r') as f:
+    climate_file_as_list = f.readlines()
+
+
+
+fname = os.path.join(output_folder,
+                     file[:-4] + ' headerAsComment.csv')
+with open(fname, 'w') as f:
+    # Note: Each line already has \n at the end
+    
+    for line in climate_file_as_list:
+        
+        if 'index' in line or 'RH' in line:
+            
+            line_to_write = '% ' + line
+            f.write(line_to_write)
+            
+        
+        else:
+            f.write(line)
+
+
+    
+
+
+
 ## Ti
 
 # constant 21
