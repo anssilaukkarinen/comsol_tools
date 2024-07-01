@@ -172,6 +172,8 @@ def MI(dataT, dataRH, MGspeedclass, MGmaxclass, Cmat):
 
 
 def MI_RHcrit(T):
+    # [T] = degC
+    # RHCrit always for very sensitive
     
     RHcrit = np.maximum(-0.00267*T**3 + 0.16*T**2 - 3.13*T + 100, 80.0)
     
