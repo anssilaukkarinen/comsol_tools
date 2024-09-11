@@ -15,36 +15,47 @@ import helper
 
 
 
-# Input and output folders can be changed as needed
+## Input and output folders can be changed as needed
 
-input_folder = r'S:\91202_Rakfys_yhteiset\Tiiliverhous\2_Laskenta\results_data'
-output_folder = os.path.join(r'S:\91202_Rakfys_yhteiset\Tiiliverhous\2_Laskenta\results_data',
-                            'figures')
+root_folder = r'S:\91202_Rakfys_yhteiset\Tiiliverhous\2_Laskenta\narvi stuff'
 
-# input_folder = r'C:\Temp\tiiliverhous\results_data'
-# output_folder = r'C:\Temp\tiiliverhous\results_data\figures'
+case_folder = 'esimerkki'
 
+file_name_to_read = 'vuoden tulokset_results.pickle'
 
-
-
-####################
-
-fname = os.path.join(input_folder,
-                     'results.pickle')
-
-with open(fname, 'rb') as f:
-    data = pickle.load(f)
-
-
-if not os.path.exists(output_folder):
-    os.makedirs(output_folder)
 
 
 figseiz = (5.5, 3.5)
 
 # This can be e.g. 100 during preliminatyr calculations
 # and 300 during final figures
-dpi_val = 100 
+dpi_val = 200
+
+
+
+
+####################
+
+# 
+
+output_folder = os.path.join(root_folder,
+                             case_folder,
+                             'figures')
+
+if not os.path.exists(output_folder):
+    os.makedirs(output_folder)
+
+
+
+# 
+
+fname = os.path.join(root_folder,
+                     case_folder,
+                     file_name_to_read)
+
+with open(fname, 'rb') as f:
+    data = pickle.load(f)
+
 
 
 
@@ -105,13 +116,10 @@ fname = os.path.join(output_folder,
 df_indicators.to_csv(fname)
 
 
-            
 
 
-        
-        
-    
-    
-    
-    
-    
+
+
+
+
+

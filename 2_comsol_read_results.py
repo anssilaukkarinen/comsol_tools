@@ -25,7 +25,15 @@ Sensitivity classes:
     - MW: mr, 0.1
     - vapor barrier: mr, 0.1
 
+
+Update 11.9.2024
+The comsol output is changed in such a way, that only single case is run
+at a time. Because of this, there is no parametric sweep/batch sweep
+being used. The grouping is removed from the code below.
+
 """
+
+
 
 import os
 import pickle
@@ -37,46 +45,58 @@ import helper
 
 
 
-# The folders can be changed as needed
-input_folder = r'S:\91202_Rakfys_yhteiset\Tiiliverhous\2_Laskenta\results_data'
-output_folder = r'S:\91202_Rakfys_yhteiset\Tiiliverhous\2_Laskenta\results_data'
+## The folders can be changed as needed
 
+root_folder = r'S:\91202_Rakfys_yhteiset\Tiiliverhous\2_Laskenta\narvi stuff'
 
-# input_folder = r'C:\Temp\tiiliverhous\results_data'
-# output_folder = r'C:\Temp\tiiliverhous\results_data'
+case_folder = 'esimerkki'
 
-
-if not os.path.exists(output_folder):
-    os.makedirs(output_folder)
+file_name_to_read = 'vuoden tulokset.txt'
 
 
 
+
+############
 
 data = {}
 
-
-#############
-
-
-
-# 
-
-print('Reading data from case0...')
-
-case_folder = 'case0'
-
-fname = os.path.join(input_folder,
+fname = os.path.join(root_folder,
                      case_folder,
-                     'Esimerkki_2D_puurankaseina_2024-06-27_results.txt')
+                     file_name_to_read)
 
-column_names = ['n_vent',
-                'time',
+# version 1
+# column_names = ['n_vent',
+#                 'time',
+#                 'T_wood_e_up',
+#                 'RH_wood_e_up',
+#                 'T_wb_i_up',
+#                 'RH_wb_i_up',
+#                 'T_ins_i_up',
+#                 'RH_ins_i_up']
+
+# version 2
+column_names = ['time',
                 'T_wood_e_up',
                 'RH_wood_e_up',
                 'T_wb_i_up',
                 'RH_wb_i_up',
                 'T_ins_i_up',
-                'RH_ins_i_up']
+                'RH_ins_i_up',
+                'T_wood_m_up',
+                'RH_wood_m_up',
+                'T_wood_i_up',
+                'RH_wood_i_up']
+
+
+
+points_for_mould_index = [['wood_e_up', 'vs', 'vs', 0.5],
+                          ['wb_i_up', 'mr', 'mr', 0.1],
+                          ['ins_i_up', 'mr', 'mr', 0.1],
+                          ['wood_m_up', 'vs', 'vs', 0.5],
+                          ['wood_i_up', 'vs', 'vs', 0.5]]
+
+
+print('Reading file...')
 
 df_all = pd.read_csv(fname,
                  sep=r'\s+',
@@ -86,82 +106,35 @@ df_all = pd.read_csv(fname,
                  dtype=np.float64)
 
 
-cols_to_groupby = ['n_vent']
-
-points_for_mould_index = [['wood_e_up', 'vs', 'vs', 0.5],
-                          ['wb_i_up', 'mr', 'mr', 0.1],
-                          ['ins_i_up', 'mr', 'mr', 0.1]]
+df = df_all.iloc[-8760:, :].copy()
+df.reset_index(drop=True,
+               inplace=True)
 
 
+print('Calculate mould index...')
 
-
-# Group rows according to parameter columns
-grouped = df_all.groupby(by=cols_to_groupby)
-
-for key in grouped.groups.keys():
-    # For each parameter combination
+# Go through all the probe points and calculate mould index for
+# cols 
+for point in points_for_mould_index:
     
-    # Extract rows belonging to that group, keep the last 8760 hours
-    # and reset index to between 0...8759
+    M_name = 'M_' + point[0]
+    T_data = df.loc[:, 'T_' + point[0]]
+    RH_data = df.loc[:, 'RH_' + point[0]]
+    MG_speedclass = point[1]
+    MG_maxclass = point[2]
+    C_mat = point[3]
     
-    if type(key) == float or type(key) == str:
-        # The key has length 1
-        # get_group needs a length-1 tuple as input
-        df = grouped.get_group( (key,) )
-    
-    else:
-        df = grouped.get_group(key)
-    
-        
-    df = df.iloc[-8760:, :].copy()
-    df.reset_index(drop=True,
-                   inplace=True)
-    
-    # Go through all the probe points and calculate mould index for
-    # cols 
-    for point in points_for_mould_index:
-        
-        
-        
-        M_name = 'M_' + point[0]
-        T_data = df.loc[:, 'T_' + point[0]]
-        RH_data = df.loc[:, 'RH_' + point[0]]
-        MG_speedclass = point[1]
-        MG_maxclass = point[2]
-        C_mat = point[3]
-        
-        df.loc[:,M_name] = helper.MI(T_data,
+    df.loc[:,M_name] = helper.MI(T_data,
                                      RH_data,
                                      MG_speedclass,
                                      MG_maxclass,
                                      C_mat)
-    
-    # 
-    
-    group_names = '_'.join([str(x).replace('_','') for x in cols_to_groupby])
-    
-    if type(key) == float:
-        group_vals = str(key)
-    
-    else:
-        group_vals = '_'.join([str(x) for x in key])
-    
-    case_name = f'{case_folder}_{group_names}_{group_vals}'
-    
-    data[case_name] = df
 
 
 
+case_name = case_folder.replace(' ','_')
 
-
-
-# Go through the other case folders here...
-
-
-
-
-
-
+data[case_name] = df
 
 
 
@@ -172,13 +145,19 @@ for key in grouped.groups.keys():
 
 # Here the results data is saved to output folder
 
+print('Export to pickle file...')
 
-fname = os.path.join(output_folder,
-                     'results.pickle')
+file_name_to_write = f'{file_name_to_read.replace(".txt","")}_results.pickle'
+
+
+fname = os.path.join(root_folder,
+                     case_folder,
+                     file_name_to_write)
 
 with open(fname, 'wb') as f:
     pickle.dump(data, f)
 
 
+print('END')
 
 
