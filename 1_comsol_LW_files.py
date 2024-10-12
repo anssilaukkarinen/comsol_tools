@@ -13,7 +13,7 @@ import pandas as pd
 print('numpy version:', np.__version__)
 print('pandas version:', pd.__version__)
 
-root_folder = os.path.join(r'S:\91202_Rakfys_yhteiset\Tiiliverhous\2_Laskenta')
+root_folder = os.path.join(r'C:\Temp\Rosenlof')
 
 input_folder = os.path.join(root_folder,
                             'DB_climate')
@@ -28,7 +28,9 @@ if not os.path.exists(output_folder):
 ############
 
 
-file = 'Jokioinen 2011 nykyilmasto 1989-2018.csv'
+# file = 'Jokioinen 2011 nykyilmasto 1989-2018.csv'
+file = 'Jokioinen 2011 RCP85-2080.csv'
+
 fname = os.path.join(input_folder,
                      file)
 
@@ -41,7 +43,16 @@ sigma_SB = 5.67e-8
 
 ## 
 
-surface_tilt = 90.0 # degrees from horizontal
+# 1:3 -> 1/30 OR
+# dy/dx
+slope_as_quotient = 1.2/2.0
+
+
+# degrees from horizontal, wall=90
+# surface_tilt = 90.0
+surface_tilt = np.arctan(slope_as_quotient)*(180.0/np.pi)
+
+print(f'1/slope = {1/slope_as_quotient:.2f}, slope = {surface_tilt:.2f} deg')
 
 F_surf_sky = ( np.cos((np.pi/180.0)*(surface_tilt/2.0)) )**2
 
@@ -74,7 +85,7 @@ X = np.column_stack(tup)
 # File
 
 fname = os.path.join(output_folder,
-                     f'{file[:-4]} LWincoming.csv')
+                     f'{file[:-4]} LWincoming_total {surface_tilt:.2f}.csv')
 
 np.savetxt(fname,
            X,
@@ -85,7 +96,7 @@ np.savetxt(fname,
 
 fig, ax = plt.subplots()
 ax.plot(LW_incoming)
-
+ax.set_title('LW incoming')
 
 
 

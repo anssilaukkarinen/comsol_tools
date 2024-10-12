@@ -16,7 +16,7 @@ print('numpy', np.__version__)
 print('pandas', pd.__version__)
 
 
-root_folder = os.path.join(r'S:\91202_Rakfys_yhteiset\Tiiliverhous\2_Laskenta')
+root_folder = os.path.join(r'C:\Temp\Rosenlof')
 
 input_folder = os.path.join(root_folder,
                             'DB_climate')
@@ -31,7 +31,8 @@ if not os.path.exists(output_folder):
 ############
 
 
-file = 'Jokioinen 2011 nykyilmasto 1989-2018.csv'
+#file = 'Jokioinen 2011 nykyilmasto 1989-2018.csv'
+file = 'Jokioinen 2011 RCP85-2080.csv'
 fname = os.path.join(input_folder,
                      file)
 
@@ -87,7 +88,7 @@ fname = os.path.join(output_folder,
 np.savetxt(fname, X, fmt = ['%d','%.1f'])
 
 
-# varying 21...25
+# varying indoor temperature
 
 Te_low = 10.0
 Te_high = 20.0
