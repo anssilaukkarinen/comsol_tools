@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 
-@author: laukkara
+@author: Anssi Laukkarinen
 
 
 
@@ -31,6 +31,7 @@ import pvlib
 
 def calc_vsat(T_, arg1='ice'):
     # [T_] = degC
+    # SFS-EN ISO 13788
     
     R_w = 461.5
     
@@ -53,6 +54,7 @@ def calc_vsat(T_, arg1='ice'):
 def calc_indoor_conditions(Te, RHe):
     # [Te] = degC
     # [RHe] = 1 (0...1)
+    # SFS-EN ISO 13788, RIL 107-2022
     
     # Outdoor conditions
     ve = RHe * calc_vsat(Te)
@@ -163,6 +165,7 @@ def calc_LWincoming(slope_as_quotient, LWdn, Te):
 def calc_WDR(ws, wd, precip_horizontal, Te, 
              terrain_category,
              z_building, Theta_azimuth):
+    # SFS-EN ISO 15927-3, SFS-EN 1991-1-4
     # [ws] = m/s
     # [wd] = deg, degrees clockwise from north
     # [precip_horizontal] = mm/h
@@ -375,6 +378,14 @@ def calc_solar_radiation_to_surface(time,
 def MI(dataT, dataRH, MGspeedclass, MGmaxclass, Cmat):
     
     """
+    Finnish Mould Growth Model
+    
+    Ojanen et al. (2010) Mould Growth Modeling of Building Structures
+    Using Sensitivity Classes of Materials. Buildings XI, paper 104.
+    
+    Viitanen et al. (2009) Moisture and Bio-deterioration Risk of
+    Building Materials and Structures. https://doi.org/10.1177/1744259109343511
+    
     # Example 1, just to get started    
     import numpy as np
     import matplotlib.pyplot as plt
