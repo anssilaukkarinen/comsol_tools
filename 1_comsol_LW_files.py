@@ -16,20 +16,22 @@ print('pandas version:', pd.__version__)
 root_folder = os.path.join(r'C:\Temp\Rosenlof')
 
 input_folder = os.path.join(root_folder,
-                            'DB_climate')
+                            'koerakennus_sateily')
 
 output_folder = os.path.join(root_folder,
-                             'DB_climate')
+                             'koerakennus_sateily')
 
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
 
 
+sigma_SB = 5.67e-8
+
 ############
 
 
 # file = 'Jokioinen 2011 nykyilmasto 1989-2018.csv'
-file = 'Jokioinen 2011 RCP85-2080.csv'
+file = 'Jokioinen2022_FMI_radiation.txt'
 
 fname = os.path.join(input_folder,
                      file)
@@ -37,7 +39,19 @@ fname = os.path.join(input_folder,
 data = pd.read_csv(fname,
                    sep=r'\s+')
 
-sigma_SB = 5.67e-8
+# There can be missing values, 
+# but fixed in such a way that only individual missing values per time
+# Convert to pandas dataFrame to numeric
+data = data.apply(pd.to_numeric, errors='coerce')
+
+# Interpolate NaN values
+data.interpolate(method='linear',
+                 limit=3,
+                 inplace=True)
+
+
+
+
 
 
 
@@ -45,7 +59,8 @@ sigma_SB = 5.67e-8
 
 # 1:3 -> 1/30 OR
 # dy/dx
-slope_as_quotient = 1.2/2.0
+# slope_as_quotient = 1.2/2.0
+slope_as_quotient = 1.0 / 40.0
 
 
 # degrees from horizontal, wall=90
@@ -68,7 +83,11 @@ emissivity_ground = 0.95
 
 LWdn = data.loc[:,'LWdn'].values
 
-T_mean = data.loc[:,'Te'].rolling(window=730, min_periods=1).mean()
+if 'Te' in data.columns:
+    T_mean = data.loc[:,'Te'].rolling(window=730, min_periods=1).mean()
+else:
+    T_mean = 5.0 # Crude estimate
+
 LWup = emissivity_ground * sigma_SB * (T_mean + 273.15)**4
 
 
