@@ -386,31 +386,33 @@ def MI(dataT, dataRH, MGspeedclass, MGmaxclass, Cmat):
     Viitanen et al. (2009) Moisture and Bio-deterioration Risk of
     Building Materials and Structures. https://doi.org/10.1177/1744259109343511
     
-    # Example 1, just to get started    
+    # Example
+    # The maximum is calculated from the last year of simulations
+    
     import numpy as np
     import matplotlib.pyplot as plt
-    % matplotlib inline
-
-    tmax = 120*168
-    t = np.arange(0, tmax/168+0.01, 1/168)
+    
+    import helper
+    
+    t = np.arange(start=0, stop=8760, step=1)
     T = 22 * np.ones(len(t))
-    RH = 90 * np.ones(len(t))
+    RH = 95 * np.ones(len(t))
     Mspeedclass = 's'
     Mmaxclass = 's'
     Cmat = 0.25
-
-    Mvals = tutpy.MI(T, RH, Mspeedclass, Mmaxclass, Cmat)
-
-    plt.plot(t, Mvals)
-    plt.xlim([0, 120])
-    plt.ylim([0, 6])
-    plt.grid()
+    
+    Mvals = helper.MI(T, RH, Mspeedclass, Mmaxclass, Cmat)
+    
+    fig, ax = plt.subplots()
+    ax.plot(t, Mvals)
+    ax.set_ylim([0, 6])
+    ax.grid(True)
+    ax.set_xlabel('Time, h')
+    ax.set_ylabel('Mould index, -')
+    
+    print(f'Mmax = {np.max(Mvals).round(1)}')
+    
     """
-    # import numpy as np
-
-    # This was previously, one class can be given as argument
-    # MGspeedclass = oneclass;
-    # MGmaxclass = oneclass;
 
     # Array for mold index values is created to avoid resizing
     M = np.zeros(dataT.size)
