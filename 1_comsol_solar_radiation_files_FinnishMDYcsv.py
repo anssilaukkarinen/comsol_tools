@@ -39,13 +39,13 @@ print('pandas version:', pd.__version__)
 print('pvlib version:', pvlib.__version__)
 
 
-root_folder = os.path.join(r'C:\Temp\Rosenlof')
+root_folder = os.path.join(r'C:\Temp')
 
 input_folder = os.path.join(root_folder,
-                            'DB_climate')
+                            'hirsiseina_puukuitulevy')
 
 output_folder = os.path.join(root_folder,
-                             'DB_climate')
+                             'hirsiseina_puukuitulevy')
 
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
@@ -57,7 +57,7 @@ if not os.path.exists(output_folder):
 
 
 # file = 'Jokioinen 2011 nykyilmasto 1989-2018.csv'
-file = 'Jokioinen 2011 RCP85-2080.csv'
+file = 'Jokioinen 2011 RCP85-2050.csv'
 
 fname = os.path.join(input_folder,
                      file)
@@ -129,17 +129,17 @@ solar_zenith = solar_position.loc[:,'zenith'].values
 solar_azimuth = solar_position.loc[:,'azimuth'].values
 
 
-# for surface_azimuth in np.arange(start=0.0, stop=360.0, step=180.0):
-for surface_azimuth in np.arange(start=0.0, stop=360.0, stop=90.0):
+for surface_azimuth in np.arange(start=0.0, stop=360.0, step=90.0):
     #surface_azimuth = 180.0 # degrees from north
     
     
     
-    slope_as_quotient = 1.2/2.0
+    slope_as_quotient = 10.0/0.01
     
     # degrees from horizontal, wall=90
     # surface_tilt = 90.0 
     surface_tilt = np.arctan(slope_as_quotient)*(180.0/np.pi)
+    print(f'surface tilt = {surface_tilt:.3f}')
     
     
     
